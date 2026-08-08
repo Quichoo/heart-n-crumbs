@@ -4,6 +4,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -32,6 +33,12 @@ export function useCatalogAdmin() {
     await deleteDoc(doc(db, "products", productId));
   };
 
+  const resetOrderCounter = async (newStartNumber) => {
+    await setDoc(doc(db, "counters", "orders"), {
+      lastOrderNumber: newStartNumber,
+    });
+  };
+
   return {
     addCategory,
     updateCategory,
@@ -39,5 +46,6 @@ export function useCatalogAdmin() {
     addProduct,
     updateProduct,
     deleteProduct,
+    resetOrderCounter,
   };
 }

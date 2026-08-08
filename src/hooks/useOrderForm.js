@@ -7,12 +7,12 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useCatalog } from "./useCatalog";
+import { useSettings } from "./useSettings";
 import { buildLineItems } from "../utils/orderUtils";
-
-const deliveryFee = 10; // TODO: move to Settings later
 
 export function useOrderForm() {
   const { categories, products, loading: catalogLoading } = useCatalog();
+  const { settings, loading: settingsLoading } = useSettings();
 
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
@@ -64,8 +64,8 @@ export function useOrderForm() {
       deliveryAddress: customerInfo.address.trim(),
       items,
       subtotal,
-      deliveryFee,
-      total: subtotal + deliveryFee,
+      deliveryFee: settings.deliveryFee,
+      total: subtotal + settings.deliveryFee,
       status: "pending",
     };
   };
@@ -114,7 +114,8 @@ export function useOrderForm() {
   return {
     categories,
     products,
-    catalogLoading,
+    catalogLoading: catalogLoading || settingsLoading,
+    settings,
     customerInfo,
     updateCustomerInfo,
     quantities,

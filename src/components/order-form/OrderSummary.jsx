@@ -7,6 +7,7 @@ function OrderSummary({
   quantities,
   products,
   categories,
+  deliveryFee,
   onPlaceOrder,
   isSubmitting,
   submitError,
