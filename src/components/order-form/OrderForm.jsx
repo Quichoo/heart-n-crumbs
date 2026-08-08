@@ -12,6 +12,7 @@ function OrderForm() {
     categories,
     products,
     catalogLoading,
+    settings,
     customerInfo,
     updateCustomerInfo,
     quantities,
@@ -52,6 +53,20 @@ function OrderForm() {
     return (
       <div className="min-h-screen bg-page-bg flex items-center justify-center">
         <p className="text-stone-600">Loading menu...</p>
+      </div>
+    );
+  }
+
+  if (!settings.storeOpen) {
+    return (
+      <div className="min-h-screen bg-page-bg flex items-center justify-center p-6">
+        <div className="max-w-md text-center bg-card-bg border border-border/10 rounded-md shadow-md p-8">
+          <div className="text-4xl mb-4">😴</div>
+          <h2 className="font-body text-xl font-semibold text-stone-800 mb-2">
+            We're Not Accepting Orders Right Now
+          </h2>
+          <p className="font-body text-stone-600">Please check back soon!</p>
+        </div>
       </div>
     );
   }
@@ -106,6 +121,7 @@ function OrderForm() {
             quantities={quantities}
             products={products}
             categories={categories}
+            deliveryFee={settings.deliveryFee}
             onPlaceOrder={handlePlaceOrderClick}
             isSubmitting={orderStage === "submitting"}
             submitError={errors.submit}

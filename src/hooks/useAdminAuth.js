@@ -3,6 +3,9 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from "firebase/auth";
 import { auth } from "../firebase";
 
@@ -19,6 +22,27 @@ export function useAdminAuth() {
     });
     return () => unsubscribe();
   }, []);
+
+  const changePassword = async (currentPassword, newPassword) => {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return { success: false, error: "Not logged in." };
+
+    try {
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        currentPassword,
+      );
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, newPassword);
+      return { success: true };
+    } catch (error) {
+      console.error("Password change failed:", error);
+      return {
+        success: false,
+        error: "Current password is incorrect, or something went wrong.",
+      };
+    }
+  };
 
   const login = async (email, password) => {
     setLoginError("");
@@ -37,5 +61,5 @@ export function useAdminAuth() {
 
   const logout = () => signOut(auth);
 
-  return { user, authLoading, loginError, login, logout };
+  return { user, authLoading, loginError, login, logout, changePassword };
 }

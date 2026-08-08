@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/admin/auth/ProtectedRoute";
 import AdminSales from "./components/admin/AdminSales";
 import AdminCategories from "./components/admin/catalog/AdminCategories";
 import AdminProducts from "./components/admin/catalog/AdminProducts";
+import AdminSettings from "./components/admin/AdminSettings";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="sales" element={<AdminSales />} />
               <Route path="categories" element={<AdminCategories />} />
               <Route path="products" element={<AdminProducts />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
           </Routes>
         </NotificationProvider>

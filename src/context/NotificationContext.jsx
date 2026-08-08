@@ -9,11 +9,28 @@ export function NotificationProvider({ children }) {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [toast, setToast] = useState(null);
+  const [muted, setMuted] = useState(
+    () => localStorage.getItem("notifMuted") === "true",
+  );
   const isFirstLoad = useRef(true);
   const audioRef = useRef(null);
+  const mutedRef = useRef(muted);
+
+  // Keep mutedRef in sync with muted state, without needing to re-subscribe
+  useEffect(() => {
+    mutedRef.current = muted;
+  }, [muted]);
+
+  const toggleMute = () => {
+    setMuted((prev) => {
+      const next = !prev;
+      localStorage.setItem("notifMuted", String(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
-    if (!user) return; // only listen while logged in as admin
+    if (!user) return;
 
     const ordersQuery = query(
       collection(db, "orders"),
@@ -22,7 +39,6 @@ export function NotificationProvider({ children }) {
 
     const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
       if (isFirstLoad.current) {
-        // Skip notifying for orders that already existed when the panel first loaded
         isFirstLoad.current = false;
         return;
       }
@@ -45,7 +61,7 @@ export function NotificationProvider({ children }) {
             `New order #${order.orderNumber} from ${order.customerName}`,
           );
 
-          if (audioRef.current) {
+          if (audioRef.current && !mutedRef.current) {
             audioRef.current.play().catch(() => {});
           }
         }
@@ -65,9 +81,17 @@ export function NotificationProvider({ children }) {
 
   return (
     <NotificationContext.Provider
-      value={{ notifications, unreadCount, markAllRead, toast, clearToast }}
+      value={{
+        notifications,
+        unreadCount,
+        markAllRead,
+        toast,
+        clearToast,
+        muted,
+        toggleMute,
+      }}
     >
-      <audio ref={audioRef} src="/notification.mp3" preload="auto" />
+      <audio ref={audioRef} src="/Notif.mp3" preload="auto" />
       {children}
     </NotificationContext.Provider>
   );
